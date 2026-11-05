@@ -1,6 +1,6 @@
 # ARIVITHAI Calculator
 
-Angular 22 project following the development plan in this repository. Phases 1–3 include a responsive UI, precise basic arithmetic, and GST and discount tools. History and settings are still planned.
+Angular 22 project following the development plan in this repository. Phases 1 through 4 include a responsive UI, precise basic arithmetic, GST and discount tools, local history, English and Tamil labels, and theme settings.
 
 ## Run locally
 

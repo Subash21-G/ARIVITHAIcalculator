@@ -1,16 +1,21 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import Decimal from 'decimal.js';
 import { calculate, CalculationError } from '../../core/calculation/engine';
+import { LocalStoreService } from '../../core/storage/local-store';
+import { I18nService } from '../../core/i18n/i18n';
 @Component({selector:'app-basic',templateUrl:'./basic.html',styleUrl:'./basic.scss'})
 export class BasicComponent {
+ readonly store=inject(LocalStoreService); readonly i18n=inject(I18nService);
  expression=signal('');
  result=signal('');
+ displayedResult=computed(()=>this.result() && this.store.decimalDisplay()==='2' ? new Decimal(this.result()).toFixed(2) : this.result());
  error=signal('');
  keys=['AC','⌫','(',')','7','8','9','÷','4','5','6','×','1','2','3','−','±','0','.','+','%','='];
  press(key:string):void {
   if(key==='AC'){this.expression.set('');this.result.set('');this.error.set('');return;}
   if(key==='='){
-   try { const value=calculate(this.expression()); this.result.set(value); this.error.set(''); }
-   catch(error) { this.result.set(''); this.error.set(error instanceof CalculationError ? error.message : 'Calculation failed'); }
+   try { const value=calculate(this.expression()); this.result.set(value); this.error.set(''); this.store.add(this.expression(),value); }
+   catch(error) { this.result.set(''); this.error.set(this.i18n.error(error instanceof CalculationError ? error.message : 'Calculation failed')); }
    return;
   }
   this.result.set(''); this.error.set('');

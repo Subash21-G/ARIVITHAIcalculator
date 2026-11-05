@@ -1,1 +1,12 @@
-<section class="panel tool"><p class="eyebrow">ARIVITHAI Calculator</p><h1>Discount calculator</h1><p class="intro">Find your savings and final price. Displayed currency values are rounded to two decimals.</p><form (submit)="submit($event)"><label>Original price<input type="text" inputmode="decimal" autocomplete="off" [value]="price()" (input)="setPrice($event)"></label><label>Discount type<select [value]="type()" (change)="setType($event)"><option value="percent">Percentage (%)</option><option value="fixed">Fixed amount (₹)</option></select></label><label>Discount {{type()==='percent'?'percentage':'amount'}}<input type="text" inputmode="decimal" autocomplete="off" [value]="value()" (input)="setValue($event)"></label><button class="primary" type="submit">Calculate discount</button></form>@if(error()){<p class="form-error" role="alert">{{error()}}</p>}@if(result();as r){<div class="breakdown" aria-live="polite"><h2>Breakdown</h2><dl><div><dt>Original price</dt><dd>₹{{r.original}}</dd></div><div><dt>You save</dt><dd>₹{{r.savings}}</dd></div><div class="total"><dt>Final price</dt><dd>₹{{r.final}}</dd></div></dl><button type="button" class="secondary" (click)="copy()">{{copied()?'Copied':'Copy final price'}}</button></div>}<p class="fine-print">A fixed discount cannot exceed the original price.</p></section>
+<section class="panel tool">
+  <p class="eyebrow">ARIVITHAI</p><h1>{{i18n.t('discountTitle')}}</h1><p class="intro">{{i18n.t('discountIntro')}}</p>
+  <form (submit)="submit($event)">
+    <label>{{i18n.t('originalPrice')}}<input type="text" inputmode="decimal" autocomplete="off" [value]="price()" (input)="setPrice($event)"></label>
+    <label>{{i18n.t('discountType')}}<select [value]="type()" (change)="setType($event)"><option value="percent">{{i18n.t('percentage')}}</option><option value="fixed">{{i18n.t('fixedAmount')}}</option></select></label>
+    <label>{{type()==='percent'?i18n.t('discountPercent'):i18n.t('discountAmount')}}<input type="text" inputmode="decimal" autocomplete="off" [value]="value()" (input)="setValue($event)"></label>
+    <button class="primary" type="submit">{{i18n.t('calculateDiscount')}}</button>
+  </form>
+  @if(error()){<p class="form-error" role="alert">{{error()}}</p>}
+  @if(result();as r){<div class="breakdown" aria-live="polite"><h2>{{i18n.t('breakdown')}}</h2><dl><div><dt>{{i18n.t('originalPrice')}}</dt><dd>₹{{r.original}}</dd></div><div><dt>{{i18n.t('youSave')}}</dt><dd>₹{{r.savings}}</dd></div><div class="total"><dt>{{i18n.t('finalPrice')}}</dt><dd>₹{{r.final}}</dd></div></dl><button type="button" class="secondary" (click)="copy()">{{copied()?i18n.t('copied'):i18n.t('copyFinal')}}</button></div>}
+  <p class="fine-print">{{i18n.t('discountFine')}}</p>
+</section>
