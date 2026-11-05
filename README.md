@@ -1,6 +1,6 @@
 # ARIVITHAI Calculator
 
-Angular 22 project following the development plan in this repository. Phase 1 contains a responsive UI and route shell. Calculation results arrive in Phase 2.
+Angular 22 project following the development plan in this repository. Phases 1 and 2 include a responsive UI, route shell and precise basic arithmetic. GST, discount, history and settings are still planned.
 
 ## Run locally
 
