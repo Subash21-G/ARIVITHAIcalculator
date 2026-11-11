@@ -40,6 +40,8 @@ testem.log
 __screenshots__/
 /test-results/
 /playwright-report/
+/tools/
+/.release-avd/
 
 # System files
 .DS_Store

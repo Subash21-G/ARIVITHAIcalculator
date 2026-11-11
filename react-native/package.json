@@ -1,0 +1,27 @@
+{
+  "name": "arivithai-native",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "start:clean": "expo start --clear",
+    "android": "expo start --android",
+    "sync:translations": "node scripts/sync-translations.mjs",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run sync:translations && npm run typecheck && expo install --check && expo export --platform android"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "decimal.js": "^10.6.0",
+    "expo": "~58.0.23",
+    "expo-clipboard": "~58.0.4",
+    "expo-system-ui": "~58.0.7",
+    "react": "19.3.0",
+    "react-native": "0.88.1"
+  },
+  "devDependencies": {
+    "@types/react": "~19.3.0",
+    "typescript": "~6.0.3"
+  }
+}

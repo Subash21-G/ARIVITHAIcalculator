@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "ARIVITHAI Calculator",
+    "description": "Offline calculator for arithmetic, GST and discounts in English and Tamil.",
+    "slug": "arivithai-calculator",
+    "version": "1.0.0",
+    "platforms": [
+      "android"
+    ],
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "in.arivithai.calculator",
+      "versionCode": 1,
+      "allowBackup": false,
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.VIBRATE",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#087c75"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b2fe1c09-cca0-46ff-a4ee-9ee1bb090146"
+      }
+    },
+    "owner": "subash-21g"
+  }
+}

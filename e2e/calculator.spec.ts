@@ -10,6 +10,10 @@ test('keyboard arithmetic and local history survive reload', async ({ page }) =>
   await page.reload();
   await expect(page.locator('.history-list li')).toHaveCount(1);
   await expect(page.locator('.history-list li')).toContainText(['0.1+0.2 = 0.3']);
+  await expect(page.locator('.history-words')).toHaveText('zero point three');
+  const entry = await page.locator('.history-list strong').first().boundingBox();
+  const timestamp = await page.locator('.history-list small').first().boundingBox();
+  expect(entry && timestamp && timestamp.y).toBeGreaterThanOrEqual((entry?.y ?? 0) + (entry?.height ?? 0));
 });
 
 test('keypad arithmetic and controlled errors', async ({ page }) => {
@@ -52,6 +56,67 @@ test('Tamil, dark theme, and decimal display persist', async ({ page }) => {
   await page.keyboard.type('1/8');
   await page.keyboard.press('Enter');
   await expect(page.locator('.result')).toHaveText('0.13');
+});
+
+test('language change keeps the current calculation', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.type('7854255-5221');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.result')).toHaveText('7849034');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByLabel('Language').selectOption('ta');
+  await page.getByRole('link', { name: 'அடிப்படை' }).click();
+  await expect(page.locator('.expression')).toHaveText('7854255−5221');
+  await expect(page.locator('.result')).toHaveText('7849034');
+  await expect(page.locator('.result-words')).toHaveText('எழுபத்து எட்டு லட்சத்து நாற்பத்து ஒன்பது ஆயிரத்து முப்பத்து நான்கு');
+  await page.getByRole('link', { name: 'வரலாறு' }).click();
+  await expect(page.locator('.history-words').first()).toHaveText('எழுபத்து எட்டு லட்சத்து நாற்பத்து ஒன்பது ஆயிரத்து முப்பத்து நான்கு');
+});
+
+test('language change keeps an unfinished expression', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.type('1250+');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByLabel('Language').selectOption('ta');
+  await page.getByRole('link', { name: 'அடிப்படை' }).click();
+  await expect(page.locator('.expression')).toHaveText('1250+');
+  await page.keyboard.type('750');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.result')).toHaveText('2000');
+});
+
+test('GST and discount work survives language changes', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'GST' }).click();
+  await page.getByLabel('Amount', { exact: true }).fill('1180');
+  await page.getByLabel('Calculation').selectOption('inclusive');
+  await page.getByRole('button', { name: 'Calculate GST' }).click();
+  await expect(page.locator('.breakdown dd').first()).toHaveText('₹1000.00');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByLabel('Language').selectOption('ta');
+  await page.getByRole('link', { name: 'ஜிஎஸ்டி' }).click();
+  await expect(page.getByLabel('தொகை', { exact: true })).toHaveValue('1180');
+  await expect(page.locator('.breakdown dd').first()).toHaveText('₹1000.00');
+  await page.getByRole('link', { name: 'தள்ளுபடி' }).click();
+  await page.getByLabel('தள்ளுபடி சதவீதம்').fill('25');
+  await page.getByRole('button', { name: 'தள்ளுபடி கணக்கிடு' }).click();
+  await expect(page.locator('.breakdown .total dd')).toHaveText('₹1500.00');
+  await page.getByRole('link', { name: 'அமைப்புகள்' }).click();
+  await page.getByLabel('மொழி').selectOption('en');
+  await page.getByRole('link', { name: 'Discount' }).click();
+  await expect(page.getByLabel('Discount percentage')).toHaveValue('25');
+  await expect(page.locator('.breakdown .total dd')).toHaveText('₹1500.00');
+});
+
+test('an existing error changes language with the interface', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.type('10/0');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('alert')).toHaveText('Cannot divide by zero');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByLabel('Language').selectOption('ta');
+  await page.getByRole('link', { name: 'அடிப்படை' }).click();
+  await expect(page.getByRole('alert')).toHaveText('பூஜ்ஜியத்தால் வகுக்க முடியாது');
 });
 
 test('small screen has no horizontal overflow and usable controls', async ({ page }) => {

@@ -1,4 +1,4 @@
-<section class="panel tool">
+﻿<section class="panel tool">
   <p class="eyebrow">ARIVITHAI</p><h1>{{i18n.t('discountTitle')}}</h1><p class="intro">{{i18n.t('discountIntro')}}</p>
   <form (submit)="submit($event)">
     <label>{{i18n.t('originalPrice')}}<input type="text" inputmode="decimal" autocomplete="off" [value]="price()" (input)="setPrice($event)"></label>
@@ -6,7 +6,7 @@
     <label>{{type()==='percent'?i18n.t('discountPercent'):i18n.t('discountAmount')}}<input type="text" inputmode="decimal" autocomplete="off" [value]="value()" (input)="setValue($event)"></label>
     <button class="primary" type="submit">{{i18n.t('calculateDiscount')}}</button>
   </form>
-  @if(error()){<p class="form-error" role="alert">{{error()}}</p>}
+  @if(error()){<p class="form-error" role="alert">{{i18n.error(error())}}</p>}
   @if(result();as r){<div class="breakdown" aria-live="polite"><h2>{{i18n.t('breakdown')}}</h2><dl><div><dt>{{i18n.t('originalPrice')}}</dt><dd>₹{{r.original}}</dd></div><div><dt>{{i18n.t('youSave')}}</dt><dd>₹{{r.savings}}</dd></div><div class="total"><dt>{{i18n.t('finalPrice')}}</dt><dd>₹{{r.final}}</dd></div></dl><button type="button" class="secondary" (click)="copy()">{{copied()?i18n.t('copied'):i18n.t('copyFinal')}}</button></div>}
   <p class="fine-print">{{i18n.t('discountFine')}}</p>
 </section>
