@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Appearance,
+  Linking,
   Platform,
   ScrollView,
   StatusBar,
@@ -30,6 +31,7 @@ type Data = {
 };
 const initial: Data = { history: [], language: 'en', theme: 'system', decimalDisplay: 'auto' };
 const key = 'arivithai-native:v1';
+const privacyPolicyUrl = 'https://subash21-g.github.io/ARIVITHAIcalculator/privacy-policy.html';
 const validRecord = (value: unknown): value is RecordItem => {
   if (!value || typeof value !== 'object') return false;
   const record = value as Record<string, unknown>;
@@ -572,6 +574,14 @@ export default function App() {
                   <Button title={t.about} small onPress={() => setPage('about')} />
                   <Button title={t.privacy} small onPress={() => setPage('privacy')} />
                 </View>
+                <Button
+                  title={data.language === 'ta' ? 'இணைய தனியுரிமைக் கொள்கையைத் திற' : 'Open online privacy policy'}
+                  onPress={() => {
+                    Linking.openURL(privacyPolicyUrl).catch(() =>
+                      Alert.alert(t.privacy, data.language === 'ta' ? 'இணையப் பக்கத்தைத் திறக்க முடியவில்லை.' : 'Could not open the privacy policy page.'),
+                    );
+                  }}
+                />
               </>
             ),
           })}
@@ -616,7 +626,7 @@ export default function App() {
                 <Text style={[styles.label, { color: color.text }]}>{t.privacyOfflineTitle}</Text>
                 <Text style={[styles.note, { color: color.text }]}>{t.privacyOffline}</Text>
                 <Text style={[styles.label, { color: color.text }]}>{t.privacyContactTitle}</Text>
-                <Text selectable style={[styles.note, { color: color.text }]}>gsubashbose3333@gmail.com</Text>
+                <Text selectable style={[styles.note, { color: color.text }]}>subashgbose21@gmail.com</Text>
               </>
             ),
           })}
