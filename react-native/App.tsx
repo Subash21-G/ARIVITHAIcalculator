@@ -1,13 +1,15 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Appearance,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -67,6 +69,10 @@ const keys = [
 ];
 
 export default function App() {
+  const { height } = useWindowDimensions();
+  const compactBasic = height < 800;
+  const shortBasic = height < 700;
+  const basicKeyHeight = shortBasic ? 42 : compactBasic ? 49 : 56;
   const [page, setPage] = useState<Page>('basic');
   const [data, setData] = useState<Data>(initial);
   const [ready, setReady] = useState(false);
@@ -113,8 +119,8 @@ export default function App() {
   const dark =
     data.theme === 'dark' || (data.theme === 'system' && Appearance.getColorScheme() === 'dark');
   const color = dark
-    ? { bg: '#211c18', panel: '#30271f', display: '#3a3129', text: '#f5eddf', muted: '#c5b8a6', border: '#655746', accent: '#9bb18e', accentText: '#211c18', amber: '#efbd69', walnut: '#302015', operator: '#40513c', key: '#3b3027' }
-    : { bg: '#f5f2e9', panel: '#fffdf8', display: '#edf1e7', text: '#382b24', muted: '#65594e', border: '#d4cbbb', accent: '#526c4e', accentText: '#ffffff', amber: '#e8b45a', walnut: '#4a3226', operator: '#e2ebdc', key: '#fffdf8' };
+    ? { bg: '#071F1B', panel: '#0E332D', display: '#124339', text: '#F8FAFC', muted: '#B4D4C9', border: '#246557', accent: '#10B981', accentText: '#071F1B', amber: '#10B981', walnut: '#071F1B', operator: '#155C49', key: '#14463A' }
+    : { bg: '#F8FAFC', panel: '#FFFFFF', display: '#EFFAF5', text: '#071F1B', muted: '#526A65', border: '#CDE7DC', accent: '#047857', accentText: '#F8FAFC', amber: '#10B981', walnut: '#071F1B', operator: '#DCFCE7', key: '#FFFFFF' };
   const update = (patch: Partial<Data>) => setData((previous) => ({ ...previous, ...patch }));
   const save = (input: string, output: string) =>
     setData((previous) => ({
@@ -246,7 +252,7 @@ export default function App() {
     </View>
   );
   const Section = ({ children }: { children: React.ReactNode }) => (
-    <View style={[styles.section, { backgroundColor: color.panel, borderColor: color.border }]}>
+    <View style={[styles.section, page === 'basic' && compactBasic && styles.compactSection, { backgroundColor: color.panel, borderColor: color.border }]}>
       {children}
     </View>
   );
@@ -266,22 +272,25 @@ export default function App() {
     </View>
   );
   return (
-    <View style={[styles.root, { backgroundColor: color.bg }]}>
+    <View style={[styles.root, { backgroundColor: color.bg, paddingTop: Platform.OS === 'android' ? Math.max(24, StatusBar.currentHeight ?? 0) : 0 }]}>
       <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
       <View style={[styles.header, { backgroundColor: color.panel }]}>
         <Text style={[styles.brand,{color:dark?color.amber:color.walnut}]}>அ ARIVITHAI</Text>
         <Text style={{ color: color.muted }}>{t[page]}</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={[styles.content, page === 'basic' && compactBasic && styles.compactContent]}
+        keyboardShouldPersistTaps="handled"
+        scrollEnabled
+      >
         {page === 'basic' &&
           Section({
             children: (
               <>
-                <Text style={[styles.title, { color: color.text }]}>{t.basicTitle}</Text>
                 <Text style={[styles.label, { color: color.muted }]}>{t.expression}</Text>
-                <Text style={[styles.expression, { color: color.text }]}>{expression || '0'}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.expression, compactBasic && styles.compactExpression, { color: color.text }]}>{expression || '0'}</Text>
                 <Text style={[styles.label, { color: color.muted }]}>{t.result}</Text>
-                <Text style={[styles.answer,{color:color.accent}]}>{displayResult || '—'}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.answer, compactBasic && styles.compactAnswer, { color: color.accent }]}>{displayResult || '—'}</Text>
                 {displayResult ? (
                   <Text style={{ color: color.muted }}>
                     {numberToWords(displayResult, data.language)}
@@ -290,8 +299,7 @@ export default function App() {
                 {error ? (
                   <Text style={styles.error}>{translateError(error, data.language)}</Text>
                 ) : null}
-                <Text style={[styles.note, { color: color.muted }]}>{t.percentHelp}</Text>
-                <View style={styles.keypad}>
+                <View style={[styles.keypad, compactBasic && styles.compactKeypad]}>
                   {keys.map((k) => (
                     <TouchableOpacity
                       key={k}
@@ -307,7 +315,7 @@ export default function App() {
                                 ? t.equals
                                 : k
                       }
-                      style={[styles.key, { backgroundColor: k === '=' ? color.amber : ['÷','×','−','+','%','(',')'].includes(k) ? color.operator : color.key, elevation: k === '=' ? 5 : 0 }]}
+                      style={[styles.key, { height: basicKeyHeight, backgroundColor: k === '=' ? color.amber : ['÷','×','−','+','%','(',')'].includes(k) ? color.operator : color.key, elevation: k === '=' ? 5 : 0 }]}
                       onPress={() => press(k)}
                     >
                       <Text style={[styles.keyText, { color: k === '=' ? color.walnut : color.text }]}>
@@ -559,6 +567,11 @@ export default function App() {
                   value={data.decimalDisplay}
                   choose={(v) => update({ decimalDisplay: v })}
                 />
+                <View style={styles.choices}>
+                  <Button title={t.help} small onPress={() => setPage('help')} />
+                  <Button title={t.about} small onPress={() => setPage('about')} />
+                  <Button title={t.privacy} small onPress={() => setPage('privacy')} />
+                </View>
               </>
             ),
           })}
@@ -568,11 +581,12 @@ export default function App() {
               <>
                 <Text style={[styles.title, { color: color.text }]}>{t.help}</Text>
                 <Text style={[styles.note, { color: color.text }]}>{t.helpIntro}</Text>
+                <Text style={[styles.note, { color: color.text }]}>{t.percentHelp}</Text>
                 <Text style={{ color: color.text }}>
                   0.1 + 0.2 = 0.3{'\n'}200 + 10% = 220{'\n'}(2 + 3) × 4 = 20
                 </Text>
                 <Text style={[styles.note, { color: color.text }]}>{t.helpGst}</Text>
-                <Button title={t.backTo} onPress={() => setPage('basic')} />
+                <Button title={t.backTo} onPress={() => setPage('settings')} />
               </>
             ),
           })}
@@ -606,11 +620,6 @@ export default function App() {
               </>
             ),
           })}
-        <View style={styles.choices}>
-          <Button title={t.help} small onPress={() => setPage('help')} />
-          <Button title={t.about} small onPress={() => setPage('about')} />
-          <Button title={t.privacy} small onPress={() => setPage('privacy')} />
-        </View>
       </ScrollView>
       <View style={[styles.tabs, { backgroundColor: color.panel }]}>
         {(['basic', 'gst', 'discount', 'history', 'settings'] as Page[]).map((p) => (
@@ -626,10 +635,12 @@ export default function App() {
             }}
           >
             <Text
+              numberOfLines={2}
               style={{
                 color: page === p ? color.accent : color.muted,
                 fontSize: 12,
                 fontWeight: '700',
+                textAlign: 'center',
               }}
             >
               {t[p]}
@@ -643,21 +654,26 @@ export default function App() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  header: { paddingTop: 50, paddingHorizontal: 20, paddingBottom: 14 },
+  header: { paddingTop: 12, paddingHorizontal: 20, paddingBottom: 12 },
   brand: { fontSize: 21, fontWeight: '800' },
   content: { padding: 16, paddingBottom: 30 },
+  compactContent: { padding: 10, paddingBottom: 8 },
   section: { borderWidth: 1, borderRadius: 20, padding: 18, marginBottom: 14 },
+  compactSection: { padding: 12, marginBottom: 0 },
   title: { fontSize: 25, fontWeight: '800', marginBottom: 18 },
   label: { fontSize: 13, fontWeight: '700', marginBottom: 6 },
   expression: { fontSize: 30, textAlign: 'right', minHeight: 45 },
+  compactExpression: { fontSize: 26, minHeight: 34 },
   answer: {
     fontSize: 38,
     fontWeight: '800',
     textAlign: 'right',
     marginBottom: 8,
   },
+  compactAnswer: { fontSize: 32, marginBottom: 4 },
   note: { marginTop: 16, marginBottom: 12, lineHeight: 20 },
   keypad: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'space-between' },
+  compactKeypad: { gap: 6 },
   key: {
     width: '22%',
     height: 56,
@@ -684,6 +700,6 @@ const styles = StyleSheet.create({
   value: { fontSize: 18, fontWeight: '700' },
   error: { color: '#bc3030', marginVertical: 10 },
   history: { borderTopWidth: 1, paddingVertical: 12 },
-  tabs: { flexDirection: 'row', paddingBottom: 10, paddingTop: 10 },
-  tab: { flex: 1, alignItems: 'center', paddingVertical: 7 },
+  tabs: { flexDirection: 'row', paddingBottom: Platform.OS === 'android' ? 22 : 10, paddingTop: 10 },
+  tab: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center', minHeight: 38, paddingHorizontal: 2 },
 });

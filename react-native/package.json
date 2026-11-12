@@ -6,7 +6,7 @@
   "scripts": {
     "start": "expo start",
     "start:clean": "expo start --clear",
-    "android": "expo start --android",
+    "android": "node scripts/start-android.mjs",
     "sync:translations": "node scripts/sync-translations.mjs",
     "typecheck": "tsc --noEmit",
     "verify": "npm run sync:translations && npm run typecheck && expo install --check && expo export --platform android"

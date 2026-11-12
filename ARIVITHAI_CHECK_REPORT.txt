@@ -1,0 +1,33 @@
+ARIVITHAI project: D:\Project\calculator
+Node version: v24.18.0
+Current Git branch: main
+Safety branch created: fix/arivithai-release-20261111-144342
+Added .github/workflows/ci.yml. Review the file before committing.
+Applied non-destructive web palette overrides. Existing duplicate CSS still needs later cleanup.
+Replaced native beige/brown color palettes with ARIVITHAI colors.
+Android React Native package ID: in.arivithai.calculator
+WARNING: Capacitor and Expo share the same Android package ID. Choose one for Play Store; script will not alter this.
+
+===== Web npm ci =====
+PASS: Web npm ci
+
+===== Angular production build =====
+PASS: Angular production build
+
+===== Angular unit tests =====
+PASS: Angular unit tests
+
+===== Install Playwright browser engines =====
+PASS: Install Playwright browser engines
+
+===== Playwright end-to-end tests =====
+PASS: Playwright end-to-end tests
+
+===== React Native npm ci =====
+PASS: React Native npm ci
+
+===== Expo verify (TypeScript, dependencies, Android JS export) =====
+PASS: Expo verify (TypeScript, dependencies, Android JS export)
+
+===== Expo Doctor =====
+PASS: Expo Doctor

@@ -8,12 +8,33 @@ The app uses Expo SDK 58. TypeScript checking, Android JavaScript bundling, Expo
 
 Requires Node.js and internet access for the first dependency installation.
 
+### Install on a physical Android phone (recommended)
+
+Expo Go loads a development bundle over the network, so it can show `Failed to download remote update` when the phone cannot reach the computer. For normal phone use, install a standalone APK instead. It includes the JavaScript bundle and works without Expo Go, Metro, or a Wi-Fi connection.
+
+Build a test APK locally with Android Studio's SDK installed:
+
+```powershell
+cd D:\Project\calculator\react-native
+npm.cmd ci
+$env:ANDROID_HOME = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+cd android
+.\gradlew.bat assembleRelease
+```
+
+Copy `android\app\build\outputs\apk\release\app-release.apk` to the phone and open it to install. Android may ask you to allow installation from your file manager. This local APK uses the project's debug signing key and is for device testing; use the EAS preview/production builds below for distribution. If an already installed app with package ID `in.arivithai.calculator` has a different signing key, uninstall that app before installing this test APK; uninstalling can erase its local history and settings.
+
+### Develop with Expo Go
+
 ```powershell
 cd D:\Project\calculator\react-native
 npm.cmd install
 npm.cmd run verify
 npm.cmd start
 ```
+
+To open the app on the local Android emulator, run `npm.cmd run android`. This command locates the Windows Android SDK and AVD directory automatically and restarts ADB if a connected emulator is unauthorized. Keep the terminal open while using the debug app.
 
 Open the Expo development server on an Android device. A preview build is recommended for release testing. Native builds can use EAS cloud build without installing Android Studio or the Android SDK locally:
 
